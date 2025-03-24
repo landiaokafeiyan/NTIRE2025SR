@@ -81,9 +81,9 @@ def _postprocess_yml_value(value):
 
 def parse_options(root_path, is_train=True):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--opt', type=str, default='./options/train/mambairv2/train_MambaIRv2_SR_x4.yml', help='Path to option YAML file.')
+    parser.add_argument('--opt', type=str, default='./options/MambaIRv2_SR_x4.yml', help='Path to option YAML file.')
     parser.add_argument('--launcher', choices=['none', 'pytorch', 'slurm'], default='none', help='job launcher')
-    parser.add_argument('--data_dir', type=str, default='/scratch/ll5484/MambaIRV2/MambaIR-main/dataset/test')
+    parser.add_argument('--data_dir', type=str, default='./dataset')
     parser.add_argument('--auto_resume', action='store_true',default=False)
     parser.add_argument('--debug', action='store_true',default=False)
     parser.add_argument('--local-rank', type=int, default=0) # for pytorch 2.0

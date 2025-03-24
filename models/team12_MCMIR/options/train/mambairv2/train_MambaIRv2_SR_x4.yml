@@ -64,7 +64,7 @@ network_g:
 path:
   # for classic SRx4, we use the x2 Model to initialize and halve the training iteration and lr for fast training
   # pretrain_network_g: ./pretrained/mambairv2_classicSR_Base_x2.pth
-  pretrain_network_g: /scratch/ll5484/MambaIRV2/MambaIR-main/experiments/MambaIRv2_SR_x4/models/net_g_175000.pth
+  pretrain_network_g: /NTIRE2025SR/models/team12_MCMIR//pretrained/net_g_30000_old.pth
   strict_load_g: false
   resume_state: ~
 

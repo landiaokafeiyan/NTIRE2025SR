@@ -93,7 +93,7 @@ if __name__ == "__main__":
     parser.add_argument("--valid_dir", default=None, type=str, help="Path to the validation set")
     parser.add_argument("--test_dir", default=None, type=str, help="Path to the test set")
     parser.add_argument("--save_dir", default="NTIRE2025-ImageSRx4/results", type=str)
-    parser.add_argument("--model_id", default=0, type=int)
+    parser.add_argument("--model_id", default=12, type=int)
 
     args = parser.parse_args()
     pprint(args)

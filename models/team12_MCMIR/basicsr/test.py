@@ -12,6 +12,24 @@ from basicsr.models import build_model
 from basicsr.utils import get_root_logger, get_time_str, make_exp_dirs,tensor2img
 from basicsr.utils.options import dict2str, parse_options
 from dataloader_moa import *
+import yaml
+from collections import OrderedDict
+
+def pre_process(img, scale, pre_pad):
+    """Pre-process, such as pre-pad and mod pad, so that the images can be divisible
+    """
+    # pre_pad
+    if pre_pad != 0:
+        img = F.pad(img, (0, pre_pad, 0, pre_pad), 'reflect')
+    # mod pad for divisible borders
+    mod_pad_h, mod_pad_w = 0, 0
+    _, h, w = img.size()
+    if (h % scale != 0):
+        mod_pad_h = (scale - h % scale)
+    if (w % scale != 0):
+        mod_pad_w = (scale - w % scale)
+    img = F.pad(img, (0, mod_pad_w, 0, mod_pad_h), 'reflect')
+    return img, mod_pad_h, mod_pad_w
 
 def tile_process(img, model, scale, tile_size, tile_pad):
     """
@@ -107,79 +125,67 @@ def tile_process(img, model, scale, tile_size, tile_pad):
 
     return output  # Returns tensor in (C, H, W), range [0,255]
 
-def test_pipeline(root_path):
-    # parse options, set distributed setting, set ramdom seed
-    opt, args = parse_options(root_path, is_train=False)
+def post_process(img, scale, pre_pad, mod_pad_h, mod_pad_w):
 
-    torch.backends.cudnn.benchmark = True
-    # torch.backends.cudnn.deterministic = True
-
-    # mkdir and initialize loggers
-    make_exp_dirs(opt)
-    log_file = osp.join(opt['path']['log'], f"test_{opt['name']}_{get_time_str()}.log")
-    logger = get_root_logger(logger_name='basicsr', log_level=logging.INFO, log_file=log_file)
-    logger.info(dict2str(opt))
-
-    # create test dataset and dataloader
-    # test_loaders = []
-    # for _, dataset_opt in sorted(opt['datasets'].items()):
-    #     test_set = build_dataset(dataset_opt)
-    #     test_loader = build_dataloader(
-    #         test_set, dataset_opt, num_gpu=opt['num_gpu'], dist=opt['dist'], sampler=None, seed=opt['manual_seed'])
-    #     logger.info(f"Number of test images in {dataset_opt['name']}: {len(test_set)}")
-    #     test_loaders.append(test_loader)
-    
-    # DIV2K dataset and loader:
-    test_set = TestSetLoader(args)
-    dataloader = DataLoader(
-                dataset=test_set,
-                batch_size=opt['datasets']['train']['batch_size_per_gpu'] * torch.cuda.device_count(),
-                shuffle=False,
-                num_workers=4,
-            )
-    # create model
-    model = build_model(opt)
-    # if use_pbar:
-    #     pbar = tqdm(total=len(dataloader), unit='image')
-    output_dir = args.data_dir + "/HR/"
-    
-    for imgs, paths in dataloader:
-        for test_img, img_path in zip(imgs, paths):     
-            sr_image = tile_process(test_img, model, opt['scale'], args.img_size, 0)
-            
-            if len(sr_image.shape) == 4:  # (B, C, H, W) case
-                sr_image = sr_image[0]
-                
-            sr_image = sr_image.cpu().detach().numpy()
-            sr_image = np.transpose(sr_image, (1, 2, 0))
-            sr_image = cv2.cvtColor(sr_image, cv2.COLOR_BGR2RGB)
-            img_name = os.path.basename(img_path)
-            img_name = img_name[0:4]+img_name[6:]
-            # Save the transformed image
-            output_path = output_dir+img_name
-            cv2.imwrite(output_path, sr_image)
-            del sr_image
-            print(f"Image saved at {output_path}")
-                
-    # for test_loader in test_loaders:
-    #     test_set_name = test_loader.dataset.opt['name']
-    #     logger.info(f'Testing {test_set_name}...')
-    #     model.validation(test_loader, current_iter=opt['name'], tb_logger=None, save_img=opt['val']['save_img'])
-
+    # remove extra pad
+    _, h, w = img.size()
+    img = img[:, 0:h - mod_pad_h * scale, 0:w - mod_pad_w * scale]
+    # remove prepad
+    if pre_pad != 0:
+        _, h, w = img.size()
+        img = img[:, 0:h - pre_pad * scale, 0:w - pre_pad * scale]
+    return img
 
 if __name__ == '__main__':
     root_path = osp.abspath(osp.join(__file__, osp.pardir, osp.pardir))
     test_pipeline(root_path)
 
+def ordered_yaml():
+    """Support OrderedDict for yaml.
+
+    Returns:
+        yaml Loader and Dumper.
+    """
+    try:
+        from yaml import CDumper as Dumper
+        from yaml import CLoader as Loader
+    except ImportError:
+        from yaml import Dumper, Loader
+
+    _mapping_tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
+
+    def dict_representer(dumper, data):
+        return dumper.represent_dict(data.items())
+
+    def dict_constructor(loader, node):
+        return OrderedDict(loader.construct_pairs(node))
+
+    Dumper.add_representer(OrderedDict, dict_representer)
+    Loader.add_constructor(_mapping_tag, dict_constructor)
+    return Loader, Dumper
+
 def main(model_dir, input_path, output_path, device=None):
+
     root_path = osp.abspath(osp.join(__file__, osp.pardir, osp.pardir))
+    
+    yaml_file_path = 'models/team12_MCMIR/options/MambaIRv2_SR_x4.yml'  # Directly specify your YAML file path
+
+    with open(yaml_file_path, 'r') as f:
+        opt = yaml.load(f, Loader=ordered_yaml()[0])
+    
+    opt['dist'] = False
+    opt['is_train'] = False
+    results_root = osp.join(root_path, 'results', opt['name'])
+    opt['path']['results_root'] = results_root
+    opt['path']['log'] = results_root
+    opt['path']['visualization'] = osp.join(results_root, 'visualization')
+
+    
+    
     # parse options, set distributed setting, set ramdom seed
-    opt, args = parse_options(root_path, is_train=False)
+    # opt, args = parse_options(root_path, is_train=False)
 
     opt['path']['pretrain_network_g'] = model_dir
-    opt['datasets']['train']['dataroot_gt'] = os.path.join(input_path,'HR')
-    opt['datasets']['train']['dataroot_lq'] = os.path.join(input_path,'LR')
-    setattr(args, 'data_dir', input_path)  # Set data directory
     output_dir = output_path
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -192,9 +198,9 @@ def main(model_dir, input_path, output_path, device=None):
     log_file = osp.join(opt['path']['log'], f"test_{opt['name']}_{get_time_str()}.log")
     logger = get_root_logger(logger_name='basicsr', log_level=logging.INFO, log_file=log_file)
     logger.info(dict2str(opt))
-    
+
     # DIV2K dataset and loader:
-    test_set = TestSetLoader(args)
+    test_set = TestSetLoader(input_path)
     dataloader = DataLoader(
                 dataset=test_set,
                 batch_size=opt['datasets']['train']['batch_size_per_gpu'] * torch.cuda.device_count(),
@@ -205,10 +211,13 @@ def main(model_dir, input_path, output_path, device=None):
     model = build_model(opt)
     # if use_pbar:
     #     pbar = tqdm(total=len(dataloader), unit='image')
-    
+
     for imgs, paths in dataloader:
         for test_img, img_path in zip(imgs, paths):     
-            sr_image = tile_process(test_img, model, opt['scale'], args.img_size, 0)
+            pre_pad = 5
+            pre_process_image, mod_pad_h, mod_path_w = pre_process(test_img, opt['scale'],pre_pad)
+            processed_img = tile_process(pre_process_image, model, opt['scale'], opt["datasets"]["train"]["gt_size"]//4, 10)
+            sr_image = post_process(processed_img, opt['scale'], pre_pad, mod_pad_h, mod_path_w)
             
             if len(sr_image.shape) == 4:  # (B, C, H, W) case
                 sr_image = sr_image[0]

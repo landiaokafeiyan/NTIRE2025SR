@@ -135,9 +135,9 @@ class ValidSetLoader_deg(Dataset):
 
 
 class TestSetLoader(Dataset):
-    def __init__(self, cfg):
+    def __init__(self, input_path):
         super(TestSetLoader, self).__init__()
-        self.dataset_dir = cfg.data_dir
+        self.dataset_dir = input_path
 
         # TODO file paths
         self.file_list = sorted(self.get_all_image_paths(self.dataset_dir))

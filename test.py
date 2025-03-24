@@ -42,7 +42,7 @@ def run(model_func, model_name, model_path, device, args, mode="test"):
     elif mode == "test":
         data_path = args.test_dir
     assert data_path is not None, "Please specify the dataset path for validation or test."
-    
+
     save_path = os.path.join(args.save_dir, model_name, mode)
     util.mkdir(save_path)
 
@@ -52,8 +52,10 @@ def run(model_func, model_name, model_path, device, args, mode="test"):
     start.record()
     model_func(model_dir=model_path, input_path=data_path, output_path=save_path, device=device)
     end.record()
+
     torch.cuda.synchronize()
     print(f"Model {model_name} runtime (Including I/O): {start.elapsed_time(end)} ms")
+    print("finished")
 
 
 def main(args):
@@ -80,7 +82,7 @@ def main(args):
     # --------------------------------
     model_func, model_path, model_name = select_model(args, device)
     logger.info(model_name)
-
+    
     # if model not in results:
     if args.valid_dir is not None:
         run(model_func, model_name, model_path, device, args, mode="valid")
@@ -94,7 +96,7 @@ if __name__ == "__main__":
     parser.add_argument("--test_dir", default=None, type=str, help="Path to the test set")
     parser.add_argument("--save_dir", default="NTIRE2025-ImageSRx4/results", type=str)
     parser.add_argument("--model_id", default=12, type=int)
-
+    
     args = parser.parse_args()
     pprint(args)
 

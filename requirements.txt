@@ -1,5 +1,5 @@
-pytorch-lightning==1.8.6
-torch<=1.13.1,>=1.7
+pytorch-lightning
+torch
 tqdm
 bcolz-zipline
 prettytable
@@ -8,7 +8,7 @@ mxnet
 opencv-python
 einops
 lmdb
-numpy<=1.23.5
+numpy
 opencv-python
 pyyaml
 scikit-learn

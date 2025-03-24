@@ -181,6 +181,8 @@ def main(model_dir, input_path, output_path, device=None):
     opt['datasets']['train']['dataroot_lq'] = os.path.join(input_path,'LR')
     setattr(args, 'data_dir', input_path)  # Set data directory
     output_dir = output_path
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     torch.backends.cudnn.benchmark = True
     # torch.backends.cudnn.deterministic = True
@@ -217,7 +219,7 @@ def main(model_dir, input_path, output_path, device=None):
             img_name = os.path.basename(img_path)
             img_name = img_name[0:4]+img_name[6:]
             # Save the transformed image
-            output_path = output_dir+img_name
-            cv2.imwrite(output_path, sr_image)
+            img_path = output_dir+img_name
+            cv2.imwrite(img_path, sr_image)
             del sr_image
-            print(f"Image saved at {output_path}")
+            print(f"Image saved at {img_path}")

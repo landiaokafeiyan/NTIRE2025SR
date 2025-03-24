@@ -63,7 +63,8 @@ network_g:
 # path
 path:
   # for classic SRx4, we use the x2 Model to initialize and halve the training iteration and lr for fast training
-  pretrain_network_g: ./pretrained/team12_MCMIR.pth
+  # pretrain_network_g: ./pretrained/mambairv2_classicSR_Base_x2.pth
+  pretrain_network_g: ./pretrained/net_g_30000_old.pth
   strict_load_g: false
   resume_state: ~
 

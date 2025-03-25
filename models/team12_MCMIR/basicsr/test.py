@@ -7,7 +7,6 @@ import sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
 sys.path.append(parent_dir)
-from basicsr.data import build_dataloader, build_dataset
 from basicsr.models import build_model
 from basicsr.utils import get_root_logger, get_time_str, make_exp_dirs,tensor2img
 from basicsr.utils.options import dict2str, parse_options
@@ -136,10 +135,6 @@ def post_process(img, scale, pre_pad, mod_pad_h, mod_pad_w):
         img = img[:, 0:h - pre_pad * scale, 0:w - pre_pad * scale]
     return img
 
-if __name__ == '__main__':
-    root_path = osp.abspath(osp.join(__file__, osp.pardir, osp.pardir))
-    test_pipeline(root_path)
-
 def ordered_yaml():
     """Support OrderedDict for yaml.
 
@@ -179,19 +174,13 @@ def main(model_dir, input_path, output_path, device=None):
     opt['path']['results_root'] = results_root
     opt['path']['log'] = results_root
     opt['path']['visualization'] = osp.join(results_root, 'visualization')
-
-    
-    
-    # parse options, set distributed setting, set ramdom seed
-    # opt, args = parse_options(root_path, is_train=False)
-
     opt['path']['pretrain_network_g'] = model_dir
+    
     output_dir = output_path
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
     torch.backends.cudnn.benchmark = True
-    # torch.backends.cudnn.deterministic = True
 
     # mkdir and initialize loggers
     make_exp_dirs(opt)
@@ -199,7 +188,7 @@ def main(model_dir, input_path, output_path, device=None):
     logger = get_root_logger(logger_name='basicsr', log_level=logging.INFO, log_file=log_file)
     logger.info(dict2str(opt))
 
-    # DIV2K dataset and loader:
+    # loader
     test_set = TestSetLoader(input_path)
     dataloader = DataLoader(
                 dataset=test_set,
@@ -209,8 +198,6 @@ def main(model_dir, input_path, output_path, device=None):
             )
     # create model
     model = build_model(opt)
-    # if use_pbar:
-    #     pbar = tqdm(total=len(dataloader), unit='image')
 
     for imgs, paths in dataloader:
         for test_img, img_path in zip(imgs, paths):     

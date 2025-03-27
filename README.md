@@ -1,3 +1,15 @@
+## Environment Configuration
+
+# Project Name: [Your Project Name]
+
+Our code is built based on **MambaIRv2**. For more details, please refer to the official repository: [MambaIR GitHub Repository](https://github.com/csguoh/MambaIR). Follow the installation section in the repository to set up the environment.
+
+---
+
+## Data Structure
+
+---
+
 # [NTIRE 2025 Challenge on Image Super-Resolution (x4)](https://cvlai.net/ntire/2025/) @ [CVPR 2025](https://cvpr.thecvf.com/)
 
 ## How to test the baseline model?

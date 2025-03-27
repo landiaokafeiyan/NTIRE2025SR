@@ -1,6 +1,12 @@
 ## Environment Configuration
-Our code is built based on **MambaIRv2**. For more details, please refer to the official repository: [MambaIR GitHub Repository](https://github.com/csguoh/MambaIR). Follow the installation section in the repository to set up the environment. Once the environment is ready, follow the instructions below for testing.
+Our code is built based on **MambaIRv2**. For more details, please refer to the official repository: [MambaIR GitHub Repository](https://github.com/csguoh/MambaIR).
 
+## Setting up the environment
+The conda environment can be reproduced with the following commands:
+```
+conda env create -f environment.yaml
+conda activate MCMIR
+```
 
 # [NTIRE 2025 Challenge on Image Super-Resolution (x4)](https://cvlai.net/ntire/2025/) @ [CVPR 2025](https://cvpr.thecvf.com/)
 

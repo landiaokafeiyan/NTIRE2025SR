@@ -1,9 +1,10 @@
-name: mambair
+name: MCMIR
 channels:
   - pytorch
   - nvidia
   - defaults
 dependencies:
+  - packaging
   - _libgcc_mutex=0.1=main
   - _openmp_mutex=5.1=1_gnu
   - blas=1.0=mkl
@@ -93,8 +94,8 @@ dependencies:
   - zlib=1.2.13=h5eee18b_0
   - zstd=1.5.5=hc292b87_0
   - pip:
+      - augmentation
       - absl-py==2.1.0
-      - packaging
       - cachetools==5.3.3
       - causal-conv1d==1.0.0
       - cmake==3.28.3
@@ -117,7 +118,6 @@ dependencies:
       - ninja==1.11.1.1
       - oauthlib==3.2.2
       - opencv-python==4.9.0.80
-      - packaging==23.2
       - protobuf==4.25.3
       - pyasn1==0.5.1
       - pyasn1-modules==0.3.0

@@ -203,7 +203,7 @@ def main(model_dir, input_path, output_path, device=None):
         for test_img, img_path in zip(imgs, paths):     
             pre_pad = 5
             pre_process_image, mod_pad_h, mod_path_w = pre_process(test_img, opt['scale'],pre_pad)
-            processed_img = tile_process(pre_process_image, model, opt['scale'], opt["datasets"]["train"]["gt_size"]//4, 10)
+            processed_img = tile_process(pre_process_image, model, opt['scale'], opt["datasets"]["train"]["gt_size"], opt["datasets"]["train"]["gt_size"])
             sr_image = post_process(processed_img, opt['scale'], pre_pad, mod_pad_h, mod_path_w)
             
             if len(sr_image.shape) == 4:  # (B, C, H, W) case

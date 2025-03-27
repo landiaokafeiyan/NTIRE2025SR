@@ -1,7 +1,5 @@
 ## Environment Configuration
-
-Our code is built based on **MambaIRv2**. For more details, please refer to the official repository: [MambaIR GitHub Repository](https://github.com/csguoh/MambaIR). Follow the installation section in the repository to set up the environment.
-
+Our code is built based on **MambaIRv2**. For more details, please refer to the official repository: [MambaIR GitHub Repository](https://github.com/csguoh/MambaIR). Follow the installation section in the repository to set up the environment. Once the environment is ready, follow the instructions below for testing.
 ---
 
 ## Data Structure

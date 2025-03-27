@@ -1,7 +1,5 @@
 ## Environment Configuration
 
-# Project Name: [Your Project Name]
-
 Our code is built based on **MambaIRv2**. For more details, please refer to the official repository: [MambaIR GitHub Repository](https://github.com/csguoh/MambaIR). Follow the installation section in the repository to set up the environment.
 
 ---

@@ -10,49 +10,14 @@ conda activate MCMIR
 
 # [NTIRE 2025 Challenge on Image Super-Resolution (x4)](https://cvlai.net/ntire/2025/) @ [CVPR 2025](https://cvpr.thecvf.com/)
 
-## How to test the baseline model?
+## How to test our model?
 
 1. `git clone https://github.com/zhengchen1999/NTIRE2025_ImageSR_x4.git`
-2. Select the model you would like to test:
+2. Select model 12:
     ```bash
-    CUDA_VISIBLE_DEVICES=0 python test.py --valid_dir [path to val data dir] --test_dir [path to test data dir] --save_dir [path to your save dir] --model_id 0
+    CUDA_VISIBLE_DEVICES=0 python test.py --valid_dir [path to val data dir] --test_dir [path to test data dir] --save_dir [path to your save dir] --model_id 12
     ```
     - You can use either `--valid_dir`, or `--test_dir`, or both of them. Be sure the change the directories `--valid_dir`/`--test_dir` and `--save_dir`.
-    - We provide a baseline (team00): DAT (default). Switch models (default is DAT) through commenting the code in [test.py](./test.py#L19).
-
-## How to add your model to this baseline?
-
-**🚨 Submissions that do not follow the official format will be rejected.**
-
-1. Register your team in the [Google Spreadsheet](https://docs.google.com/spreadsheets/d/1j6Rzt6St70lqbYi0f74le9qDiouj5suF35xOm2o5C9I/edit?usp=sharing) and get your team ID.
-
-2. Put your the code of your model in folder:  `./models/[Your_Team_ID]_[Your_Model_Name]`
-
-   - Please zero pad [Your_Team_ID] into two digits: e.g. 00, 01, 02
-
-3. Put the pretrained model in folder: `./model_zoo/[Your_Team_ID]_[Your_Model_Name]`
-
-   - Please zero pad [Your_Team_ID] into two digits: e.g. 00, 01, 02
-   - Note: Please provide a download link for the pretrained model, if the file size exceeds **100 MB**. Put the link in `./model_zoo/[Your_Team_ID]_[Your_Model_Name]/[Your_Team_ID]_[Your_Model_Name].txt`: e.g. [team00_dat.txt](./model_zoo/team00_dat/team00_dat.txt)
-
-4. Add your model to the model loader `test.py` as follows:
-
-   - Edit the `else` to `elif` in [test.py](./test.py#L24), and then you can add your own model with model id.
-
-   - `model_func` **must** be a function, which accept **4 params**. 
-
-     - `model_dir`: the pretrained model. Participants are expected to save their pretrained model in `./model_zoo/` with in a folder named `[Your_Team_ID]_[Your_Model_Name]` (e.g., team00_dat). 
-
-     - `input_path`: a folder contains several images in PNG format. 
-
-     - `output_path`: a folder contains restored images in PNG format. Please follow the section Folder Structure. 
-
-     - `device`: computation device.
-
-5. Send us the command to download your code, e.g,
-
-   - `git clone [Your repository link]`
-   - We will add your code and model checkpoint to the repository after the challenge.
 
 ## How to eval images using IQA metrics?
 
@@ -63,7 +28,6 @@ conda create -n NTIRE-SR python=3.8
 conda activate NTIRE-SR
 pip install -r requirements.txt
 ```
-
 
 ### Folder Structure
 ```
